@@ -33,6 +33,7 @@ import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
 
 import net.sf.json.JSONObject;
+import org.jenkinsci.Symbol;
 
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -41,7 +42,7 @@ import org.kohsuke.stapler.StaplerRequest;
 /**
  * String based parameter that supports setting a regular expression to validate the
  * user's entered value, giving real-time feedback on the value.
- * 
+ *
  * @author Peter Hayes
  * @since 1.0
  * @see {@link ParameterDefinition}
@@ -81,9 +82,13 @@ public class ValidatingStringParameterDefinition extends ParameterDefinition {
         return failedValidationMessage;
     }
 
-    public String getRootUrl() {
-        return Hudson.getInstance().getRootUrl();
-    }
+    /*public String getRootUrl() {
+	String root = Hudson.getInstance().getRootUrl();
+	if (root == null || root.length() == 0) {
+	   root = "http://localhost:8080";
+	}
+	return root;
+    }*/
 
     @Override
     public ValidatingStringParameterValue getDefaultParameterValue() {
@@ -91,6 +96,7 @@ public class ValidatingStringParameterDefinition extends ParameterDefinition {
         return v;
     }
 
+    @Symbol("validatingStringParam")
     @Extension
     public static class DescriptorImpl extends ParameterDescriptor {
 
@@ -126,7 +132,7 @@ public class ValidatingStringParameterDefinition extends ParameterDefinition {
                 if (Pattern.matches(regex, value)) {
                     return FormValidation.ok();
                 } else {
-                    return failedValidationMessage == null || "".equals(failedValidationMessage)
+                    return null == failedValidationMessage.equals || "".equals(failedValidationMessage)
                             ? FormValidation.error("Value entered does not match regular expression: " + regex)
                             : FormValidation.error(failedValidationMessage);
                 }
